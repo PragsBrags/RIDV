@@ -1,0 +1,5 @@
+##ignored files; not to be uploaded to github
+
+/node_modules
+
+.env
