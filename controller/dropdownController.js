@@ -2,6 +2,7 @@
 
 const getScholar = async (req,res) => {
     const sch = req.params;
+    res.send("dropdown links working");
 
 };
 
@@ -15,4 +16,34 @@ const getSchool = async (req,res) => {
 
 }
 
-export {getScholar, getDept, getSchool};
+const hScholar = async (req,res) => {
+    
+
+}
+
+const citeScholar = async (req,res) => {
+    
+
+}
+
+const hDept = async (req,res) => {
+    
+
+}
+
+const citeDept = async (req,res) => {
+    
+
+}
+
+const hSchool = async (req,res) => {
+    
+
+}
+
+const citeSchool = async (req,res) => {
+    
+
+}
+
+export {getScholar, getDept, getSchool, hSchool, citeSchool, hScholar, citeScholar, hDept, citeDept};
