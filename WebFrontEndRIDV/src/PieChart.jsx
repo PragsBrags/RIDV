@@ -9,7 +9,7 @@ const DepartmentPublicationsPieChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8002/count');
+        const response = await fetch('http://localhost:8002/dep_count');
         const data = await response.json();
 
         if (data.error) {

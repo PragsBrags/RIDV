@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './HomePage';
 import TablePage from './TablePage';
 
-function App() {
+const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/table/:personId" element={<TablePage />} />
+        <Route path="/table/:facultyId" element={<TablePage />} />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;

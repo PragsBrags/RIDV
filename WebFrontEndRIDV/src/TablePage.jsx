@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import './TablePage.css'
 
 function TablePage() {
   const { personId } = useParams(); // Access the dynamic part of the URL
@@ -19,7 +20,7 @@ function TablePage() {
   }, [personId]);
 
   return (
-    <div style={{ padding: '50px' }}>
+    <div>
       <h1>Faculty Publications</h1>
       <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
