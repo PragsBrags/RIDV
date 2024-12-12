@@ -133,19 +133,22 @@ const HomePage = () => {
       </div>
 
       <main className="main-content">
-        {/* Research Papers Bar Chart */}
-        <div className="faculty-papers-chart">
-          <ResponsiveContainer width="100%" height="100%">
-            <SchoolBarGraphData />
-          </ResponsiveContainer>
-        </div>
+        {/* Show Bar Chart and Pie Chart based on selected school */}
+        {selectedSchool && (
+          <>
+            <div className="faculty-papers-chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <SchoolBarGraphData selectedSchool={selectedSchool} />
+              </ResponsiveContainer>
+            </div>
 
-        {/* Pie chart and h-index components */}
-        <div className="pie-chart">
-          <ResponsiveContainer width="100%" height="100%">
-            <DepartmentPublicationsPieChart />
-          </ResponsiveContainer>
-        </div>
+            <div className="pie-chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <DepartmentPublicationsPieChart selectedSchool={selectedSchool} />
+              </ResponsiveContainer>
+            </div>
+          </>
+        )}
         <div className="hindex">
           <Hindex />
         </div>
@@ -178,7 +181,7 @@ const HomePage = () => {
                     <td>{paper.p_year}</td>
                     <td>{paper.publisher}</td>
                     <td>{paper.p_type}</td>
-                    <td><a href={paper.URL} target="_blank" rel="noopener noreferrer">Link</a></td>
+                    <td><a href={paper.URl} target="_blank" rel="noopener noreferrer">Link</a></td>
                   </tr>
                 ))}
               </tbody>
