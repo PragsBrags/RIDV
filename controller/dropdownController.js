@@ -13,13 +13,15 @@ const getDept = async (req,res) => {
 
 const getSchool = async (req,res) => {
     const schol = req.params;
-    const [dept, charts] = await schoolDetails(schol);
+    const [dept, charts, hindex, citescore] = await schoolDetails(schol);
     res.json({
         dept,
-        charts
+        charts,
+        hindex,
+        citescore
     });
 
-}
+};
 
 
 export {getScholar, getDept, getSchool};

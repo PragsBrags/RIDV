@@ -1,21 +1,40 @@
 import { createPool } from 'mysql2';
+import dotenv from "dotenv"
+
+dotenv.config();
 
 const pool = createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'god@great123',
-    database: 'test'
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
 }).promise();
 
 export async function schoolDetails ( school ){
     try{
         const deptNames = await getDepartment(school);
         const schoolCharts = await getSchoolChart(school);
-        return [deptNames, schoolCharts];
+        const [h_index, citescore] = await getSchoolhincite(school);
+        return [deptNames, schoolCharts, h_index, citescore];
     }
     catch (err){
         console.error("Return error: ",err);
         throw err;
+    }
+};
+
+//fetch list of schools
+export async function getSchool() {
+    try {
+        const [result] = await pool.query(`
+        SELECT school, hindex, cite_score, paper_amt
+        FROM tbl_school
+        `);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
     }
 };
 
@@ -30,38 +49,6 @@ export async function getPapers(ID) {
         INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
         WHERE a.scholar_id = ?
         `, scholarId);
-        return result;
-    }
-    catch (err){
-        console.error("Database query error:", err);
-        throw err; // Let the error propagate to the caller
-    }
-};
-
-//fetch list of schools
-export async function getSchool() {
-    try {
-        const [result] = await pool.query(`
-        SELECT *
-        FROM tbl_school
-        `);
-        return result;
-    }
-    catch (err){
-        console.error("Database query error:", err);
-        throw err; // Let the error propagate to the caller
-    }
-};
-
-// Fetch departments for a specific school
-export async function getDepartment(school) {
-    try {
-        const [result] = await pool.query(`
-        SELECT d.*
-        FROM tbl_department d
-        INNER JOIN tbl_school s ON d.SID = s.SID
-        WHERE s.School = ?
-        `,[school.school]);
         return result;
     }
     catch (err){
@@ -87,10 +74,26 @@ export async function getScholar(dept) {
     }
 };
 
+// Fetch departments for a specific school
+export async function getDepartment(school) {
+    try {
+        const [result] = await pool.query(`
+        SELECT d.*
+        FROM tbl_department d
+        INNER JOIN tbl_school s ON d.SID = s.SID
+        WHERE s.School = ?
+        `,[school.school]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
 //Fetch data for bar chart and pie chart
 export async function getSchoolChart(school) {
     try {
-        console.log(school);
         const [result] = await pool.query(`
         SELECT 
             d.Dept,         
@@ -104,7 +107,6 @@ export async function getSchoolChart(school) {
         WHERE 
             s.School = ?
         `, [school.school]);
-        console.log(result);
         return result;
     }
     catch (err){
@@ -112,3 +114,44 @@ export async function getSchoolChart(school) {
         throw err; // Let the error propagate to the caller
     }
 };
+
+//fetch data for hindex and ite score of school
+export async function getSchoolhincite(school) {
+    try {
+        const [result] = await pool.query(`
+        SELECT hindex, cite_score
+        FROM tbl_school s
+        WHERE s.School = ?
+        `, [school.school]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Fetch data for bar chart and pie chart for scholar
+export async function deptChart(dept) {
+    try {
+        const [result] = await pool.query(`
+        SELECT 
+            s.scholar,         
+            c.paper_amt    
+        FROM 
+            tbl_department d
+        INNER JOIN 
+            tbl_count c ON d.DID = c.DID
+        INNER JOIN 
+            tbl_scholar s ON s.scholar_id = c.scholar_id
+        WHERE 
+            d.Dept =?
+        `, [dept.department]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
