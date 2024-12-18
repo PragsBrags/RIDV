@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, LabelList, Tooltip, ResponsiveContainer } from 'recharts';
+import { ResponsiveContainer } from 'recharts';
 import './HomePage.css';
 import SchoolBarGraphData from './BarChart';
 import DepartmentPublicationsPieChart from './PieChart';
-import Hindex from './hindexdata';
-import { useNavigate } from 'react-router-dom';
+import Hindex from './hindexdata';  // Import the Hindex component
 import './TablePage.css';
 
 const HomePage = () => {
@@ -118,8 +117,6 @@ const HomePage = () => {
             </select>
           </div>
 
-
-
           {/* Reset Button */}
           <div className="reset-button">
             <button onClick={handleReset}>Reset</button>
@@ -137,27 +134,26 @@ const HomePage = () => {
         {selectedSchool && (
           <>
             <div className="faculty-papers-chart">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={400}>
                 <SchoolBarGraphData selectedSchool={selectedSchool} />
               </ResponsiveContainer>
             </div>
 
             <div className="pie-chart">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={400}>
                 <DepartmentPublicationsPieChart selectedSchool={selectedSchool} />
               </ResponsiveContainer>
             </div>
           </>
         )}
+
+        {/* Show H-Index and CiteScore based on selected school */}
         <div className="hindex">
-          <Hindex />
+          {selectedSchool && <Hindex selectedSchool={selectedSchool} />}
         </div>
 
         {/* Display Table with Papers */}
-
-      </main>
-
-      {showTable && (
+        {showTable && (
           <div className="papers-table">
             <h3>Faculty Publications</h3>
             <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -188,6 +184,7 @@ const HomePage = () => {
             </table>
           </div>
         )}
+      </main>
     </div>
   );
 };
