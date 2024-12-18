@@ -23,49 +23,26 @@ export async function schoolDetails ( school ){
     }
 };
 
+export async function departmentDetails (dept) {
+    try{
+        const scholarNames = await getScholar(dept);
+        const deptCharts = await deptChart(dept);
+        const [h_index, citescore] = await deptscore(dept);
+        return [ scholarNames, deptCharts, h_index, citescore];
+    }
+    catch (err){
+        console.error('Return error:',err);
+        throw err;
+    }
+}
+
 //fetch list of schools
 export async function getSchool() {
     try {
         const [result] = await pool.query(`
-        SELECT school, hindex, cite_score, paper_amt
+        SELECT school,paper_amt
         FROM tbl_school
         `);
-        return result;
-    }
-    catch (err){
-        console.error("Database query error:", err);
-        throw err; // Let the error propagate to the caller
-    }
-};
-
-// Fetch papers for a specific scholar
-export async function getPapers(ID) {
-    const scholarId = ID;
-    try {
-        const [result] = await pool.query(`
-        SELECT p.*, a.*, pa.*
-        FROM tbl_paper p
-        INNER JOIN tbl_paper_author pa ON p.paper_id = pa.paper_id
-        INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
-        WHERE a.scholar_id = ?
-        `, scholarId);
-        return result;
-    }
-    catch (err){
-        console.error("Database query error:", err);
-        throw err; // Let the error propagate to the caller
-    }
-};
-
-// Fetch scholars for a specific department
-export async function getScholar(dept) {
-    try {
-        const [result] = await pool.query(`
-        SELECT sc.scholar_id, sc.scholar
-        FROM tbl_scholar sc
-        INNER JOIN tbl_department d ON sc.DID = d.DID
-        WHERE d.Dept = ?
-        `,dept);
         return result;
     }
     catch (err){
@@ -131,7 +108,24 @@ export async function getSchoolhincite(school) {
     }
 };
 
-//Fetch data for bar chart and pie chart for scholar
+// Fetch scholars for a specific department
+export async function getScholar(dept) {
+    try {
+        const [result] = await pool.query(`
+        SELECT sc.scholar_id, sc.scholar
+        FROM tbl_scholar sc
+        INNER JOIN tbl_department d ON sc.DID = d.DID
+        WHERE d.Dept = ?
+        `,[dept.department]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Fetch data for bar chart and pie chart for scholar of the department
 export async function deptChart(dept) {
     try {
         const [result] = await pool.query(`
@@ -155,3 +149,37 @@ export async function deptChart(dept) {
     }
 };
 
+// Fetch department hindex and citescore for a specific department
+export async function deptscore(dept) {
+    try {
+        const [result] = await pool.query(`
+        SELECT dp.hindex, dp.cite_score
+        FROM tbl_dep_count dp
+        INNER JOIN tbl_department d ON dp.DID = d.DID
+        WHERE d.Dept = ?
+        `,[dept.department]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+// Fetch papers for a specific scholar
+export async function getPapers(ID) {
+    try {
+        const [result] = await pool.query(`
+        SELECT p.*, a.*, pa.*
+        FROM tbl_paper p
+        INNER JOIN tbl_paper_author pa ON p.paper_id = pa.paper_id
+        INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
+        WHERE a.scholar = ?
+        `, [ID.scholar]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
