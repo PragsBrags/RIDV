@@ -1,163 +1,97 @@
-const express = require("express");
-const mysql = require("mysql2");
-const cors = require("cors");
+import { createPool } from 'mysql2';
 
-const app = express();
-app.use(cors());
-
-const db = mysql.createConnection({
+const pool = createPool({
     host: 'localhost',
     user: 'root',
-    password: '#Venom321',
-    database: 'project'
-});
+    password: 'god@great123',
+    database: 'test'
+}).promise();
 
-db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err);
-    } else {
-        console.log('Connected to the database!');
+export async function schoolDetails ( school ){
+    try{
+        const deptNames = await getDepartment(school);
+        const schoolCharts = await getSchoolChart(school);
+        return [deptNames, schoolCharts];
     }
-});
-
-app.get('/', (req, res) => {
-    return res.json("From backend side");
-});
+    catch (err){
+        console.error("Return error: ",err);
+        throw err;
+    }
+};
 
 // Fetch papers for a specific scholar
-app.get('/paper/:scholarId', (req, res) => {
-    const scholarId = req.params.scholarId;
-    const sql = `
-      SELECT p.*, a.*, pa.*
-      FROM tbl_paper p
-      INNER JOIN tbl_paper_author pa ON p.paper_id = pa.paper_id
-      INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
-      WHERE a.scholar_id = ?
-    `;
-    
-    db.query(sql, [scholarId], (err, data) => {
-      if (err) {
-        console.error('SQL error:', err);
-        return res.json({ error: 'SQL error' });
-      } else {
-        return res.json(data);
-      }
-    });
-});
+export async function getPapers(ID) {
+    const scholarId = ID;
+    try {
+        const [result] = await pool.query(`
+        SELECT p.*, a.*, pa.*
+        FROM tbl_paper p
+        INNER JOIN tbl_paper_author pa ON p.paper_id = pa.paper_id
+        INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
+        WHERE a.scholar_id = ?
+        `, scholarId);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
 
-// Fetch list of schools
-app.get('/school', (req, res) => {
-    const sql = `
+//fetch list of schools
+export async function getSchool() {
+    try {
+        const [result] = await pool.query(`
         SELECT *
         FROM tbl_school
-    `;
-    
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            console.log(data);  // Log the data for debugging
-            return res.json(data);  // Send the data to the frontend
-        }
-    });
-});
-// Fetch list of departments
-app.get('/depart', (req, res) => {
-    const sql = `
-        SELECT *
-        FROM tbl_department
-    `;
-    
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            console.log(data);  // Log the data for debugging
-            return res.json(data);  // Send the data to the frontend
-        }
-    });
-});
-// Fetch list of scholars
-app.get('/scholar', (req, res) => {
-    const sql = `
-        SELECT *
-        FROM tbl_scholar
-    `;
-    
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            console.log(data);  // Log the data for debugging
-            return res.json(data);  // Send the data to the frontend
-        }
-    });
-});
-
-//Selects everything from tbl_dep_count table
-app.get('/dep_count', (req, res) => {
-    const sql = `
-        SELECT *
-        FROM tbl_dep_count
-    `;
-    
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            console.log(data);  // Log the data for debugging
-            return res.json(data);  // Send the data to the frontend
-        }
-    });
-});
+        `);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
 
 // Fetch departments for a specific school
-app.get('/school/depart', (req, res) => {
-    const school = req.query.school;
-    const sql = `
+export async function getDepartment(school) {
+    try {
+        const [result] = await pool.query(`
         SELECT d.*
         FROM tbl_department d
         INNER JOIN tbl_school s ON d.SID = s.SID
         WHERE s.School = ?
-    `;
-    
-    db.query(sql, [school], (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            return res.json(data);
-        }
-    });
-});
+        `,[school.school]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
 
 // Fetch scholars for a specific department
-app.get('/school/scholar', (req, res) => {
-    const department = req.query.department;
-    const sql = `
+export async function getScholar(dept) {
+    try {
+        const [result] = await pool.query(`
         SELECT sc.scholar_id, sc.scholar
         FROM tbl_scholar sc
         INNER JOIN tbl_department d ON sc.DID = d.DID
         WHERE d.Dept = ?
-    `;
-    
-    db.query(sql, [department], (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            return res.json(data);
-        }
-    });
-});
+        `,dept);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
 //Fetch data for bar chart and pie chart
-app.get('/school/depart/count', (req, res) => {
-    const school = req.query.school;
-    const sql = `
+export async function getSchoolChart(school) {
+    try {
+        console.log(school);
+        const [result] = await pool.query(`
         SELECT 
             d.Dept,         
             dc.paper_amt    
@@ -169,19 +103,12 @@ app.get('/school/depart/count', (req, res) => {
             tbl_dep_count dc ON d.DID = dc.DID
         WHERE 
             s.School = ?
-    `;
-    
-    db.query(sql, [school], (err, data) => {
-        if (err) {
-            console.error('SQL error:', err);
-            return res.json({ error: 'SQL error' });
-        } else {
-            return res.json(data);
-        }
-    });
-});
-
-
-app.listen(8002, () => {
-    console.log("Listening on port 8002");
-});
+        `, [school.school]);
+        console.log(result);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
