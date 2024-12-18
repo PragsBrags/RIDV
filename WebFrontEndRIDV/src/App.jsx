@@ -31,7 +31,7 @@ const HomePage = () => {
     setSelectedFaculty('');
     setShowTable(false); // Hide the table when school changes
 
-    fetch(`http://localhost:8002/school/depart?school=${school}`)
+    fetch(`http://localhost:3000/${school}`)
       .then(response => response.json())
       .then(data => setDepartments(data))
       .catch(err => console.error("Error fetching departments:", err));
