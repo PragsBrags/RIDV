@@ -1,47 +1,46 @@
 :root {
-    --primary-color: #fffcee;    /* Dark background */
-    --secondary-color: #9d4edd;   /* Neon purple */
-    --text-color: #222222;        /* White text */
-    --font-family: 'Open Sans', 'Segoe UI', sans-serif;
-  }
+  --primary-color: #fffcee;    /* Dark background */
+  --secondary-color: #9d4edd;   /* Neon purple */
+  --text-color: #222222;        /* White text */
+  --font-family: 'Open Sans', 'Segoe UI', sans-serif;
+}
 
 /* Container styling */
 papers-table {
-    padding: 1.5rem;
-    border: 1px solid var(--secondary-color); /* Secondary color for border */
-    background-color: var(--primary-color);  /* Primary color for background */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional for slight elevation */
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20 auto;
-  }
-  
-  /* Table headers */
-  .papers-table th {
-    background-color: var(--secondary-color); /* Secondary background for headers */
-    color: var(--primary-color);              /* Primary color for text */
-    font-weight: bold;                        /* Bold text for headers */
-    padding: 0.8rem;
-    text-align: left;
-    border-bottom: 2px solid var(--primary-color);
-  }
-  
-  /* Table body rows */
-  .papers-table td {
-    padding: 0.8rem;
-    color: var(--text-color); /* Default text color */
-    border-bottom: 1px solid var(--secondary-color);
-  }
-  
-  /* Alternating row background for better readability */
-  .papers-table tbody tr:nth-child(even) {
-    background-color: rgba(0, 0, 0, 0.05); /* Light shade for even rows */
-  }
-  
-  /* Hover effect for rows */
-  .papers-table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Slight highlight on hover */
-    cursor: pointer;
-  }
-  
+  padding: 1.5rem;
+  border: 1px solid var(--secondary-color); /* Secondary color for border */
+  background-color: var(--primary-color);  /* Primary color for background */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional for slight elevation */
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20 auto;
+}
+
+/* Table headers */
+.papers-table th {
+  background-color: var(--secondary-color); /* Secondary background for headers */
+  color: var(--primary-color);              /* Primary color for text */
+  font-weight: bold;                        /* Bold text for headers */
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+/* Table body rows */
+.papers-table td {
+  padding: 0.8rem;
+  color: var(--text-color); /* Default text color */
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+/* Alternating row background for better readability */
+.papers-table tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05); /* Light shade for even rows */
+}
+
+/* Hover effect for rows */
+.papers-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Slight highlight on hover */
+  cursor: pointer;
+}
