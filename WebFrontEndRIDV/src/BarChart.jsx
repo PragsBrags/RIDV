@@ -10,7 +10,7 @@ const SchoolBarGraphData = ({ selectedSchool }) => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8002/school/depart/count?school=${selectedSchool}`);
+        const response = await fetch(`http://localhost:3000/${selectedSchool}`);
         const data = await response.json();
 
         if (data.error) {
