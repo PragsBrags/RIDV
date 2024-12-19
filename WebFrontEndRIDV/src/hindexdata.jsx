@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from "react";
 import './HomePage.css';
 
-const Hindex = ({ selectedSchool }) => {
+const Hindex = ({ selectedSchool, selectedDepartment }) => {
     const [hindexData, setHindexData] = useState({ hindex: null, citeScore: null });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (selectedSchool) {
-            setLoading(true);
-            setError(null);
+        let fetchUrl = "";
+        setLoading(true);
+        setError(null);
 
-            fetch(`http://localhost:8002/school/hindex?school=${selectedSchool}`)
+        // Check if selectedSchool or selectedDepartment is provided and construct the URL accordingly
+        if (selectedDepartment) {
+            fetchUrl = `http://localhost:8002/dep_count?department=${selectedDepartment}`;
+        }else if (selectedSchool) {
+            fetchUrl = `http://localhost:8002/school/hindex?school=${selectedSchool}`;
+        } 
+
+        // Log the fetch URL for debugging
+        console.log("Fetching URL:", fetchUrl);
+
+        if (fetchUrl) {
+            fetch(fetchUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error("Failed to fetch hindex data");
+                        throw new Error("Failed to fetch H-Index and CiteScore data");
                     }
                     return response.json();
                 })
                 .then(data => {
+                    // Log the data returned from the API
+                    console.log("API Response:", data);
+
                     if (data && data.length > 0) {
                         setHindexData({ hindex: data[0].hindex, citeScore: data[0].cite_score });
                     } else {
@@ -32,12 +46,13 @@ const Hindex = ({ selectedSchool }) => {
                 });
         } else {
             setHindexData({ hindex: null, citeScore: null });
+            setLoading(false);
         }
-    }, [selectedSchool]);
+    }, [selectedSchool, selectedDepartment]); // Dependency array includes both selectedSchool and selectedDepartment
 
     return (
         <div className="hindex">
-            <h4>School Metrics</h4>
+            <h4>{selectedSchool ? "School Metrics" : selectedDepartment ? "Department Metrics" : "Select School or Department"}</h4>
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (

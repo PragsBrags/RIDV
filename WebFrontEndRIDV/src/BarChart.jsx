@@ -1,89 +1,116 @@
 import React, { useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, LabelList, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList, Legend } from "recharts";
 import './HomePage.css';
 
-const SchoolBarGraphData = ({ selectedSchool }) => {
-  const [facultyPapers, setFacultyPapers] = useState([]);
+const SchoolBarGraphData = ({ selectedSchool, selectedDepartment }) => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [chartTitle, setChartTitle] = useState("Research Papers Published");
 
   useEffect(() => {
-    if (!selectedSchool) return;
+    // Clear previous data to prevent showing outdated information
+    setChartData([]);
 
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`http://localhost:8002/school/depart/count?school=${selectedSchool}`);
+        let url = "";
+        if (selectedDepartment) {
+          url = `http://localhost:8002/school/depart/scholar/count?Dept=${selectedDepartment}`;
+          setChartTitle(`Research Papers by Scholars in ${selectedDepartment}`);
+        } else if (selectedSchool) {
+          url = `http://localhost:8002/school/depart/count?school=${selectedSchool}`;
+          setChartTitle(`Research Papers by Departments in ${selectedSchool}`);
+        } else {
+          url = `http://localhost:8002/school`;
+          setChartTitle("Research Papers Published by Schools");
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
-        if (data.error) {
-          console.error("Error fetching data:", data.error);
-        } else {
-          const formattedData = data.map(item => ({
-            name: item.Dept,     // Department name
-            papers: item.paper_amt  // Paper count
-          }));
-          setFacultyPapers(formattedData);
-        }
+        // Format data for the chart
+        const formattedData = data.map((item) => ({
+          name: selectedDepartment ? item.scholar : item.Dept || item.School,
+          papers: item.paper_amt,
+        }));
+
+        setChartData(formattedData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching bar chart data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [selectedSchool]);
+  }, [selectedSchool, selectedDepartment]); // Trigger whenever these dependencies change
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-  if (facultyPapers.length === 0) {
+  if (chartData.length === 0) {
     return (
       <div className="chart-container">
-        <h3 className="chart-title">No data available</h3>
+        <h3 className="chart-title">{chartTitle}</h3>
+        <p>No data available</p>
       </div>
     );
   }
 
   return (
     <div className="chart-container">
-      <h3 className="chart-title">Research Papers Published by Department</h3>
+      <h3 className="chart-title">{chartTitle}</h3>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
+          data={chartData}
           layout="vertical"
-          data={facultyPapers}
-          margin={{ left: 40, right: 20, top: 20, bottom: 50 }}
-          barCategoryGap="20%"
+          margin={{ top: 20, right: 30, left: 50, bottom: 20 }}
         >
-          {/* X Axis */}
-          <XAxis type="number" dataKey="papers" hide={true} />
-          
-          {/* Y Axis - Department Names */}
+          {/* X Axis - Paper count */}
+          <XAxis
+            type="number"
+            dataKey="papers"
+            tick={{ fill: "#b185db", fontWeight: "bold" }}
+            axisLine={{ stroke: "#b185db" }}
+            tickLine={{ stroke: "#b185db" }}
+          />
+
+          {/* Y Axis - Name of entity */}
           <YAxis
             type="category"
             dataKey="name"
-            width={250}
-            axisLine={{ stroke: '#b185db' }}
-            tickLine={{ stroke: '#b185db' }}
+            tick={{ fill: "#b185db", fontWeight: "bold" }}
+            axisLine={{ stroke: "#b185db" }}
+            tickLine={{ stroke: "#b185db" }}
+            width={200}
           />
-          
-          {/* Tooltip for additional information */}
+
+          {/* Tooltip */}
           <Tooltip
             contentStyle={{
-              backgroundColor: '#1a1a1a',
-              color: '#ffffff',
-              border: '1px solid #b185db'
+              backgroundColor: "#1a1a1a",
+              color: "#ffffff",
+              border: "1px solid #b185db",
             }}
-            labelStyle={{ color: '#b185db' }}
+            labelStyle={{ color: "#b185db" }}
           />
+
           
-          {/* Bar for displaying papers count */}
+
+          {/* Bar for displaying paper counts */}
           <Bar
             dataKey="papers"
+            name="Papers Published"
             fill="#b185db"
             barSize={30}
             radius={[0, 15, 15, 0]}
           >
-            {/* Label showing paper amount */}
             <LabelList
               dataKey="papers"
-              position="center"
-              fill="#ffffff"
-              style={{ fontWeight: 'bold' }}
+              position="right"
+              style={{ fill: "#ffffff", fontWeight: "bold" }}
             />
           </Bar>
         </BarChart>

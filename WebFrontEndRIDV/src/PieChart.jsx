@@ -3,21 +3,32 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import PropTypes from 'prop-types';
 import './HomePage.css';
 
-const DepartmentPublicationsPieChart = ({ selectedSchool }) => {
+const DepartmentPublicationsPieChart = ({ selectedSchool, selectedDepartment }) => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!selectedSchool) return;
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        const response = await fetch(
-          `http://localhost:8002/school/depart/count?school=${encodeURIComponent(selectedSchool)}`
-        );
+        let response;
+        if (selectedDepartment) {
+          // Fetch scholar data for the selected department
+          response = await fetch(
+            `http://localhost:8002/school/depart/scholar/count?Dept=${encodeURIComponent(selectedDepartment)}`
+          );
+        } else if (selectedSchool) {
+          // Fetch department data for the selected school
+          response = await fetch(
+            `http://localhost:8002/school/depart/count?school=${encodeURIComponent(selectedSchool)}`
+          );
+        } else {
+          // Fetch data for all schools
+          response = await fetch('http://localhost:8002/school');
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -30,15 +41,20 @@ const DepartmentPublicationsPieChart = ({ selectedSchool }) => {
         }
 
         const totalPapers = data.reduce((sum, item) => sum + (item.paper_amt || 0), 0);
+
         const formattedData = data.map((item) => ({
-          name: item.Dept || 'Unknown Department',
+          name: selectedDepartment
+            ? item.scholar || 'Unknown Scholar'
+            : selectedSchool
+            ? item.Dept || 'Unknown Department'
+            : item.School || 'Unknown School',
           papers: item.paper_amt || 0,
-          percentage: ((item.paper_amt || 0) / totalPapers) * 100
+          percentage: totalPapers > 0 ? ((item.paper_amt || 0) / totalPapers) * 100 : 0,
         }));
 
         setChartData(formattedData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -46,7 +62,7 @@ const DepartmentPublicationsPieChart = ({ selectedSchool }) => {
     };
 
     fetchData();
-  }, [selectedSchool]);
+  }, [selectedSchool, selectedDepartment]);
 
   const COLORS = [
     '#6a4c93', // Purple
@@ -60,40 +76,65 @@ const DepartmentPublicationsPieChart = ({ selectedSchool }) => {
 
   return (
     <div className="chart-container">
-      <h2 className="chart-title">Department Publications</h2>
+      <h2 className="chart-title">
+        {selectedDepartment
+          ? `Scholar Publications in ${selectedDepartment}`
+          : selectedSchool
+          ? `Department Publications in ${selectedSchool}`
+          : 'School Publications'}
+      </h2>
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">Error: {error}</p>}
       {!loading && !error && chartData.length > 0 && (
-        <ResponsiveContainer width="100%" height={400}>
-          <PieChart>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={130}
-              dataKey="papers"
-              stroke="none"
-              nameKey="name"
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#3a86ff',
-                color: '#ffffff',
-                borderRadius: '8px',
-                padding: '10px',
-              }}
-              formatter={(value, name, props) => [
-                `${props.payload.percentage.toFixed(2)}%`,
-                name
-              ]}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <>
+          <ResponsiveContainer width="101%" height={400}>
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={130}
+                dataKey="papers"
+                stroke="none"
+                nameKey="name"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#3a86ff',
+                  color: '#ffffff',
+                  borderRadius: '8px',
+                  padding: '10px',
+                }}
+                formatter={(value, name, props) => [
+                  `${props.payload.percentage.toFixed(2)}% of total`,
+                  name,
+                ]}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+
+          {/* Legend Section */}
+          <div className="legend-container" style={{ marginTop: '-30px' }}>
+            {chartData.map((entry, index) => (
+              <div key={index} className="legend-item" style={{ display: 'flex', alignItems: 'center' }}>
+                <div
+                  style={{
+                    backgroundColor: COLORS[index % COLORS.length],
+                    width: '15px',
+                    height: '15px',
+                    marginRight: '10px',
+                  }}
+                />
+                <span>{entry.name}</span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
       {!loading && !error && chartData.length === 0 && <p>No data available</p>}
     </div>
@@ -101,7 +142,8 @@ const DepartmentPublicationsPieChart = ({ selectedSchool }) => {
 };
 
 DepartmentPublicationsPieChart.propTypes = {
-  selectedSchool: PropTypes.string.isRequired,
+  selectedSchool: PropTypes.string,
+  selectedDepartment: PropTypes.string,
 };
 
 export default DepartmentPublicationsPieChart;
