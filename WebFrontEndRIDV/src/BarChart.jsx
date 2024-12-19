@@ -16,24 +16,49 @@ const SchoolBarGraphData = ({ selectedSchool, selectedDepartment }) => {
       try {
         let url = "";
         if (selectedDepartment) {
-          url = `http://localhost:8002/school/depart/scholar/count?Dept=${selectedDepartment}`;
+          url = `http://localhost:3000/dropdown/school/${selectedDepartment}`;
           setChartTitle(`Research Papers by Scholars in ${selectedDepartment}`);
         } else if (selectedSchool) {
-          url = `http://localhost:8002/school/depart/count?school=${selectedSchool}`;
+          url = `http://localhost:3000/dropdown/${selectedSchool}`;
           setChartTitle(`Research Papers by Departments in ${selectedSchool}`);
         } else {
-          url = `http://localhost:8002/school`;
+          url = `http://localhost:3000/`;
           setChartTitle("Research Papers Published by Schools");
         }
 
         const response = await fetch(url);
         const data = await response.json();
 
-        // Format data for the chart
-        const formattedData = data.map((item) => ({
-          name: selectedDepartment ? item.scholar : item.Dept || item.School,
-          papers: item.paper_amt,
-        }));
+   // Format data for the chart
+const formattedData = data.names.map((item) => {
+  // Determine the field to use for matching
+  const isScholar = item.scholar !== undefined;
+  const isSchool = item.School !== undefined;
+  const isDept = item.Dept !== undefined;
+
+  // Find corresponding chart data by matching scholar, School, or Dept
+  const matchingChart = data.charts.find(chart =>
+    isScholar
+      ? chart.scholar === item.scholar
+      : isSchool
+      ? chart.School === item.School
+      : chart.Dept === item.Dept
+  );
+
+  return {
+    name: selectedDepartment
+      ? item.scholar || item.Dept || item.School
+      : isScholar
+      ? item.scholar
+      : isSchool
+      ? item.School
+      : item.Dept,
+    papers: matchingChart ? matchingChart.paper_amt : 0, // Use 0 if no matching chart data
+  };
+});
+
+
+
 
         setChartData(formattedData);
       } catch (error) {

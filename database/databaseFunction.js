@@ -13,7 +13,7 @@ const pool = createPool({
 export async function schoolDetails ( school ){
     try{
         const deptNames = await getDepartment(school);
-        const schoolCharts = await getSchoolChart(school);
+        const schoolCharts = await getSchoolCharts(school);
         const [h_index, citescore] = await getSchoolhincite(school);
         return [deptNames, schoolCharts, h_index, citescore];
     }
@@ -36,11 +36,38 @@ export async function departmentDetails (dept) {
     }
 }
 
+export async function school () {
+    try{
+        const schoolnames = await getSchool();
+        const schoolcharts = await getSchoolchart();
+        return [ schoolnames, schoolcharts];
+    }
+    catch (err){
+        console.error('Return error:',err);
+        throw err;
+    }
+}
+
 //fetch list of schools
 export async function getSchool() {
     try {
         const [result] = await pool.query(`
-        SELECT school,paper_amt
+        SELECT School
+        FROM tbl_school
+        `);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//fetch list of schools
+export async function getSchoolchart() {
+    try {
+        const [result] = await pool.query(`
+        SELECT School, paper_amt
         FROM tbl_school
         `);
         return result;
@@ -69,7 +96,7 @@ export async function getDepartment(school) {
 };
 
 //Fetch data for bar chart and pie chart
-export async function getSchoolChart(school) {
+export async function getSchoolCharts(school) {
     try {
         const [result] = await pool.query(`
         SELECT 

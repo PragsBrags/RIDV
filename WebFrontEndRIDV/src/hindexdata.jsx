@@ -13,9 +13,9 @@ const Hindex = ({ selectedSchool, selectedDepartment }) => {
 
         // Check if selectedSchool or selectedDepartment is provided and construct the URL accordingly
         if (selectedDepartment) {
-            fetchUrl = `http://localhost:8002/dep_count?department=${selectedDepartment}`;
+            fetchUrl = `http://localhost:3000/dropdown/school/${selectedDepartment}`;
         }else if (selectedSchool) {
-            fetchUrl = `http://localhost:8002/school/hindex?school=${selectedSchool}`;
+            fetchUrl = `http://localhost:3000/dropdown/${selectedSchool}`;
         } 
 
         // Log the fetch URL for debugging
@@ -33,11 +33,18 @@ const Hindex = ({ selectedSchool, selectedDepartment }) => {
                     // Log the data returned from the API
                     console.log("API Response:", data);
 
-                    if (data && data.length > 0) {
-                        setHindexData({ hindex: data[0].hindex, citeScore: data[0].cite_score });
+                    if (data && data.hindex) {
+                        setHindexData({
+                            hindex: data.hindex.hindex || null,
+                            citeScore: data.hindex.cite_score || null,
+                        });
                     } else {
-                        setHindexData({ hindex: null, citeScore: null });
+                        setHindexData({
+                            hindex: null,
+                            citeScore: null,
+                        });
                     }
+                    
                     setLoading(false);
                 })
                 .catch(err => {

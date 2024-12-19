@@ -18,16 +18,16 @@ const DepartmentPublicationsPieChart = ({ selectedSchool, selectedDepartment }) 
         if (selectedDepartment) {
           // Fetch scholar data for the selected department
           response = await fetch(
-            `http://localhost:8002/school/depart/scholar/count?Dept=${encodeURIComponent(selectedDepartment)}`
+            `http://localhost:3000/dropdown/school/${selectedDepartment}`
           );
         } else if (selectedSchool) {
           // Fetch department data for the selected school
           response = await fetch(
-            `http://localhost:8002/school/depart/count?school=${encodeURIComponent(selectedSchool)}`
+            `http://localhost:3000/dropdown/${selectedSchool}`
           );
         } else {
           // Fetch data for all schools
-          response = await fetch('http://localhost:8002/school');
+          response = await fetch('http://localhost:3000/');
         }
 
         if (!response.ok) {
@@ -40,17 +40,42 @@ const DepartmentPublicationsPieChart = ({ selectedSchool, selectedDepartment }) 
           throw new Error(data.error);
         }
 
-        const totalPapers = data.reduce((sum, item) => sum + (item.paper_amt || 0), 0);
+        // Calculate total papers
+// Calculate total papers
+const totalPapers = data.charts.reduce((sum, item) => sum + (item.paper_amt || 0), 0);
 
-        const formattedData = data.map((item) => ({
-          name: selectedDepartment
-            ? item.scholar || 'Unknown Scholar'
-            : selectedSchool
-            ? item.Dept || 'Unknown Department'
-            : item.School || 'Unknown School',
-          papers: item.paper_amt || 0,
-          percentage: totalPapers > 0 ? ((item.paper_amt || 0) / totalPapers) * 100 : 0,
-        }));
+// Format data for the pie chart
+const formattedData = data.names.map((item) => {
+  // Determine the type of data: scholar, Dept, or School
+  const isScholar = 'scholar' in item;
+  const isSchool = 'School' in item;
+  const isDept = 'Dept' in item;
+
+  // Find corresponding chart data
+  const matchingChart = data.charts.find(chart =>
+    isScholar
+      ? chart.scholar === item.scholar
+      : isSchool
+      ? chart.School === item.School
+      : chart.Dept === item.Dept
+  );
+
+  // Format data for the pie chart
+  return {
+    name: selectedDepartment
+      ? (item.scholar || 'Unknown Scholar')
+      : selectedSchool
+      ? (item.Dept || 'Unknown Department')
+      : (item.School || 'Unknown School'),
+    papers: matchingChart ? matchingChart.paper_amt || 0 : 0,
+    percentage:
+      totalPapers > 0
+        ? ((matchingChart ? matchingChart.paper_amt || 0 : 0) / totalPapers) * 100
+        : 0,
+  };
+});
+
+
 
         setChartData(formattedData);
       } catch (error) {

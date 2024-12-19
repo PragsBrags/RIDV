@@ -21,9 +21,9 @@ const HomePage = () => {
   // Fetch school list
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:8002/school')
+    fetch('http://localhost:3000/')
       .then((response) => response.json())
-      .then((data) => setSchoolList(data))
+      .then((data) => setSchoolList(data.names))
       .catch((err) => {
         console.error('Error fetching schools:', err);
         setError('Failed to load schools. Please try again.');
@@ -42,9 +42,9 @@ const HomePage = () => {
     setError(null);
 
     if (school) {
-      fetch(`http://localhost:8002/school/depart?school=${school}`)
+      fetch(`http://localhost:3000/dropdown/${school}`)
         .then((response) => response.json())
-        .then((data) => setDepartments(data))
+        .then((data) => setDepartments(data.names))
         .catch((err) => {
           console.error('Error fetching departments:', err);
           setError('Failed to load departments. Please try again.');
@@ -66,9 +66,9 @@ const HomePage = () => {
     setError(null);
 
     if (department) {
-      fetch(`http://localhost:8002/school/scholar?department=${department}`)
+      fetch(`http://localhost:3000/dropdown/school/${department}`)
         .then((response) => response.json())
-        .then((data) => setFacultyMembers(data))
+        .then((data) => setFacultyMembers(data.names))
         .catch((err) => {
           console.error('Error fetching faculty:', err);
           setError('Failed to load faculty members. Please try again.');
@@ -88,7 +88,7 @@ const HomePage = () => {
     setError(null);
 
     if (faculty) {
-      fetch(`http://localhost:8002/paper/${faculty}`)
+      fetch(`http://localhost:3000/dropdown/school/department/${faculty}`)
         .then((response) => response.json())
         .then((data) => {
           setFacultyPapers(data);
@@ -162,7 +162,7 @@ const HomePage = () => {
             >
               <option value="">Select Faculty Member</option>
               {facultyMembers.map((faculty, index) => (
-                <option key={index} value={faculty.scholar_id}>
+                <option key={index} value={faculty.scholar}>
                   {faculty.scholar}
                 </option>
               ))}
@@ -241,7 +241,7 @@ const HomePage = () => {
                 </tr>
               </thead>
               <tbody>
-                {facultyPapers.map((paper, index) => (
+                {facultyPapers.papyrus.map((paper, index) => (
                   <tr key={index}>
                     <td>{paper.paper_id}</td>
                     <td>{paper.paper_title}</td>

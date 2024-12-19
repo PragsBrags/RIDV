@@ -11,9 +11,9 @@ const getScholar = async (req,res) => {
 
 const getDept = async (req,res) => {
     const dep = req.params;
-    const [scholar, charts, hindex, citescore] = await departmentDetails(dep);
+    const [names, charts, hindex, citescore] = await departmentDetails(dep);
     res.json({
-        scholar,
+        names,
         charts,
         hindex,
         citescore
@@ -23,9 +23,9 @@ const getDept = async (req,res) => {
 
 const getSchool = async (req,res) => {
     const schol = req.params;
-    const [dept, charts, hindex, citescore] = await schoolDetails(schol);
+    const [names, charts, hindex, citescore] = await schoolDetails(schol);
     res.json({
-        dept,
+        names,
         charts,
         hindex,
         citescore
