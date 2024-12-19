@@ -14,9 +14,6 @@ const SchoolBarGraphData = ({ selectedSchool, selectedDepartment }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-<<<<<<< HEAD
-        const response = await fetch(`http://localhost:3000/${selectedSchool}`);
-=======
         let url = "";
         if (selectedDepartment) {
           url = `http://localhost:8002/school/depart/scholar/count?Dept=${selectedDepartment}`;
@@ -30,7 +27,6 @@ const SchoolBarGraphData = ({ selectedSchool, selectedDepartment }) => {
         }
 
         const response = await fetch(url);
->>>>>>> fcf7b1384cd5ce5097b312cd80e9b4be6364928b
         const data = await response.json();
 
         // Format data for the chart
