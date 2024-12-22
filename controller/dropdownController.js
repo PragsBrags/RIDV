@@ -1,9 +1,9 @@
-import { departmentDetails, getPapers, schoolDetails } from "../database/databaseFunction.js";
+import { departmentDetails, getPapers, schoolDetails, scolor } from "../database/databaseFunction.js";
 
 
 const getScholar = async (req,res) => {
     const sch = req.params;
-    const papyrus = await getPapers(sch);
+    const [papyrus] = await scolor(sch);
     res.json({
         papyrus
     });

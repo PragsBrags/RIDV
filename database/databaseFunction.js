@@ -48,6 +48,17 @@ export async function school () {
     }
 }
 
+export async function scolor (sch) {
+    try{
+        const papers = await getPapers(sch);
+        return [ papers];
+    }
+    catch (err){
+        console.error('Return error:',err);
+        throw err;
+    }
+}
+
 //fetch list of schools
 export async function getSchool() {
     try {
