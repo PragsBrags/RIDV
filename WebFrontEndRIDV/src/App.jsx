@@ -177,12 +177,11 @@ const HomePage = () => {
       </header>
 
       {/* Show newsletter only if no faculty is selected */}
-      {!selectedFaculty && (
+
         <div className="newsletter-card">
           <h2>Did You Know?</h2>
           <p>Some interesting facts here...</p>
         </div>
-      )}
 
       <main className="main-content">
         {/* Loading or Error State */}
@@ -223,11 +222,12 @@ const HomePage = () => {
             )}
           </>
         )}
-
+      </main>
+      <main>
         {/* Faculty Papers Table */}
         {showTable && (
           <div className="papers-table">
-            <h3>Faculty Publications</h3>
+            <h2>Faculty Publications</h2>
             <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
