@@ -175,6 +175,16 @@
   flex-grow: 1;
 }
 
+.selectedFaculty-content {
+  max-width: 1300px;
+  margin: 2rem 0.5rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1120px 180px; /* Sidebar + Main content */
+  gap: 2rem;
+  flex-grow: 1;
+}
+
 /* Newsletter section */
 .newsletter-card {
   background-color: #fdfde3;
@@ -408,4 +418,45 @@
   margin-bottom: 10px;
   margin-top: 10px;
   font-weight: bold;
+}
+
+.hindex_faculty {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  padding: 8px;
+  padding-left: 24px;
+  margin: 0 auto;
+  position: relative;
+  align-items: left;
+}
+
+.hindex_faculty p {
+  margin: 0;
+  font-size: 16px;
+  white-space: nowrap; /* Prevent the h-index from wrapping to the next line */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Show ellipsis if the text doesn't fit */
+  max-width: 100%;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.hindex_faculty h4 {
+  text-align: left;
+  color: var(--secondary-color); 
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.hindex_faculty::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top:20%;  /* Starting point of the line, adjust as needed */
+  bottom: 0%; /* Ending point of the line, adjust as needed */
+  width: 1px; /* Thin line */
+  background-color: #c4c3c4;
 }

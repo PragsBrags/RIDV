@@ -150,7 +150,7 @@ export async function getSchoolhincite(school) {
 export async function getScholar(dept) {
     try {
         const [result] = await pool.query(`
-        SELECT sc.scholar_id, sc.scholar
+        SELECT sc.scholar_id, sc.scholar, sc.h_index, sc.cite_score
         FROM tbl_scholar sc
         INNER JOIN tbl_department d ON sc.DID = d.DID
         WHERE d.Dept = ?

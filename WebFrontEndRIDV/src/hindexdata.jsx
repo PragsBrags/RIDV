@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './HomePage.css';
 
-const Hindex = ({ selectedSchool, selectedDepartment }) => {
+const Hindex = ({ selectedSchool, selectedDepartment, selectedFaculty }) => {
     const [hindexData, setHindexData] = useState({ hindex: null, citeScore: null });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -11,17 +11,23 @@ const Hindex = ({ selectedSchool, selectedDepartment }) => {
         setLoading(true);
         setError(null);
 
-        // Check if selectedSchool or selectedDepartment is provided and construct the URL accordingly
-        if (selectedDepartment) {
+        // Construct the URL based on the selected values
+        if (selectedFaculty) {
+            fetchUrl = `http://localhost:3000/dropdown/school/department/${selectedFaculty}`;
+        } else if (selectedDepartment) {
             fetchUrl = `http://localhost:3000/dropdown/school/${selectedDepartment}`;
-        }else if (selectedSchool) {
+        } else if (selectedSchool) {
             fetchUrl = `http://localhost:3000/dropdown/${selectedSchool}`;
-        } 
+        }
 
         // Log the fetch URL for debugging
         console.log("Fetching URL:", fetchUrl);
 
         if (fetchUrl) {
+            // Clear previous data before fetching
+            setHindexData({ hindex: null, citeScore: null });
+
+            // Fetch data and handle response or errors
             fetch(fetchUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -33,18 +39,27 @@ const Hindex = ({ selectedSchool, selectedDepartment }) => {
                     // Log the data returned from the API
                     console.log("API Response:", data);
 
+                    // Check if data.hindex exists, and set the hindexData accordingly
                     if (data && data.hindex) {
                         setHindexData({
                             hindex: data.hindex.hindex || null,
                             citeScore: data.hindex.cite_score || null,
                         });
-                    } else {
+                    }
+                    // Check if data.papyrus exists and set the hindexData accordingly
+                    else if (data && data.papyrus) {
+                        setHindexData({
+                            hindex: data.papyrus.h_index || null,
+                            citeScore: data.papyrus.cite_score || null,
+                        });
+                    }
+                    else {
                         setHindexData({
                             hindex: null,
                             citeScore: null,
                         });
                     }
-                    
+
                     setLoading(false);
                 })
                 .catch(err => {
@@ -55,11 +70,23 @@ const Hindex = ({ selectedSchool, selectedDepartment }) => {
             setHindexData({ hindex: null, citeScore: null });
             setLoading(false);
         }
-    }, [selectedSchool, selectedDepartment]); // Dependency array includes both selectedSchool and selectedDepartment
+    }, [selectedSchool, selectedDepartment, selectedFaculty]); // Dependency array includes selectedSchool and selectedDepartment and selectedFaculty
+
+    const getHeader = () => {
+        if (selectedFaculty) {
+            return "Faculty Metrics";
+        } else if (selectedDepartment) {
+            return "Department Metrics";
+        } else if (selectedSchool) {
+            return "School Metrics";
+        } else {
+            return "Select School, Department, or Faculty";
+        }
+    };
 
     return (
         <div className="hindex">
-            <h4>{selectedSchool ? "School Metrics" : selectedDepartment ? "Department Metrics" : "Select School or Department"}</h4>
+            <h4>{getHeader()}</h4>
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
