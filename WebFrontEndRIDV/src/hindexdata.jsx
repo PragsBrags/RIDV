@@ -39,20 +39,22 @@ const Hindex = ({ selectedSchool, selectedDepartment, selectedFaculty }) => {
                     // Log the data returned from the API
                     console.log("API Response:", data);
 
-                    // Check if data.hindex exists, and set the hindexData accordingly
-                    if (data && data.hindex) {
-                        setHindexData({
-                            hindex: data.hindex.hindex || null,
-                            citeScore: data.hindex.cite_score || null,
-                        });
-                    }
                     // Check if data.papyrus exists and set the hindexData accordingly
-                    else if (data && data.papyrus) {
+                    if (data && data.papyrus) {
                         setHindexData({
                             hindex: data.papyrus.h_index || null,
                             citeScore: data.papyrus.cite_score || null,
                         });
                     }
+
+                    // Check if data.hindex exists, and set the hindexData accordingly
+                    else if (data && data.hindex) {
+                        setHindexData({
+                            hindex: data.hindex.hindex || null,
+                            citeScore: data.hindex.cite_score || null,
+                        });
+                    }
+
                     else {
                         setHindexData({
                             hindex: null,

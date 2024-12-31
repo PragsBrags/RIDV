@@ -232,7 +232,10 @@ const HomePage = () => {
         {/* Faculty Papers Table */}
         {showTable && (
           <div className="papers-table">
-            <h2>Faculty Publications</h2>
+          <h2>{selectedFaculty
+            ? `Faculty papers published by ${selectedFaculty}`
+            : "Faculty Publications"}   
+          </h2>         
             <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
