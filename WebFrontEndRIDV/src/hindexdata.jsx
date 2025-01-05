@@ -20,14 +20,11 @@ const Hindex = ({ selectedSchool, selectedDepartment, selectedFaculty }) => {
             fetchUrl = `http://localhost:3000/dropdown/${selectedSchool}`;
         }
 
-        // Log the fetch URL for debugging
         console.log("Fetching URL:", fetchUrl);
 
         if (fetchUrl) {
-            // Clear previous data before fetching
             setHindexData({ hindex: null, citeScore: null });
 
-            // Fetch data and handle response or errors
             fetch(fetchUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -36,35 +33,35 @@ const Hindex = ({ selectedSchool, selectedDepartment, selectedFaculty }) => {
                     return response.json();
                 })
                 .then(data => {
-                    // Log the data returned from the API
                     console.log("API Response:", data);
 
-                    // Check if data.papyrus exists and set the hindexData accordingly
-                    if (data && data.papyrus) {
+                    if (selectedFaculty && data.papyrus) {
+                        // Handle Faculty-specific data
+                        const papyrus = Array.isArray(data.papyrus) ? data.papyrus[0] : data.papyrus;
                         setHindexData({
-                            hindex: data.papyrus.h_index || null,
-                            citeScore: data.papyrus.cite_score || null,
+                            hindex: papyrus?.h_index || null,
+                            citeScore: papyrus?.cite_score || null,
                         });
-                    }
-
-                    // Check if data.hindex exists, and set the hindexData accordingly
-                    else if (data && data.hindex) {
+                    } else if (selectedDepartment && data.hindex) {
+                        // Handle Department-specific data
                         setHindexData({
-                            hindex: data.hindex.hindex || null,
-                            citeScore: data.hindex.cite_score || null,
+                            hindex: data.hindex?.hindex || null,
+                            citeScore: data.hindex?.cite_score || null,
                         });
-                    }
-
-                    else {
+                    } else if (selectedSchool && data.hindex) {
+                        // Handle School-specific data
                         setHindexData({
-                            hindex: null,
-                            citeScore: null,
+                            hindex: data.hindex?.hindex || null,
+                            citeScore: data.hindex?.cite_score || null,
                         });
+                    } else {
+                        setHindexData({ hindex: null, citeScore: null });
                     }
 
                     setLoading(false);
                 })
                 .catch(err => {
+                    console.error("Fetch Error:", err.message);
                     setError(err.message);
                     setLoading(false);
                 });
@@ -72,7 +69,7 @@ const Hindex = ({ selectedSchool, selectedDepartment, selectedFaculty }) => {
             setHindexData({ hindex: null, citeScore: null });
             setLoading(false);
         }
-    }, [selectedSchool, selectedDepartment, selectedFaculty]); // Dependency array includes selectedSchool and selectedDepartment and selectedFaculty
+    }, [selectedSchool, selectedDepartment, selectedFaculty]);
 
     const getHeader = () => {
         if (selectedFaculty) {
