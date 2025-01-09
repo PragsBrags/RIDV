@@ -26,11 +26,12 @@
 /* Main container */
 .home-container {
   background-color: var(--primary-color);
-  min-height: 100vh;
+  min-height: 120vh;
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
+  flex-grow: 1;
 }
 
 /* Header styles */
@@ -402,7 +403,8 @@
 
 .hindex p {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
   white-space: nowrap; /* Prevent the h-index from wrapping to the next line */
   overflow: hidden;
   text-overflow: ellipsis; /* Show ellipsis if the text doesn't fit */
@@ -433,7 +435,8 @@
 
 .hindex_faculty p {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
   white-space: nowrap; /* Prevent the h-index from wrapping to the next line */
   overflow: hidden;
   text-overflow: ellipsis; /* Show ellipsis if the text doesn't fit */
