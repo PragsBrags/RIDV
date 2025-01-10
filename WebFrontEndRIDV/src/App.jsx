@@ -15,6 +15,7 @@ const HomePage = () => {
   const [schoolList, setSchoolList] = useState([]);
   const [facultyPapers, setFacultyPapers] = useState([]);
   const [showTable, setShowTable] = useState(false);
+  const [showHindex, setHindex] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -38,6 +39,7 @@ const HomePage = () => {
     setSelectedDepartment('');
     setSelectedFaculty('');
     setShowTable(false);
+    setHindex(false);
     setLoading(true);
     setError(null);
 
@@ -62,6 +64,7 @@ const HomePage = () => {
     setSelectedDepartment(department);
     setSelectedFaculty('');
     setShowTable(false);
+    setHindex(false);
     setLoading(true);
     setError(null);
 
@@ -93,6 +96,7 @@ const HomePage = () => {
         .then((data) => {
           setFacultyPapers(data);
           setShowTable(true);
+          setHindex(true);
         })
         .catch((err) => {
           console.error('Error fetching papers:', err);
@@ -102,6 +106,7 @@ const HomePage = () => {
     } else {
       setFacultyPapers([]);
       setShowTable(false);
+      setHindex(false);
       setLoading(false);
     }
   };
@@ -115,6 +120,7 @@ const HomePage = () => {
     setFacultyMembers([]);
     setFacultyPapers([]);
     setShowTable(false);
+    setHindex(false);
     setLoading(false);
     setError(null);
   };
@@ -176,13 +182,10 @@ const HomePage = () => {
         </nav>
       </header>
 
-      {/* Show newsletter only if no faculty is selected */}
-      {!selectedFaculty && (
         <div className="newsletter-card">
           <h2>Did You Know?</h2>
           <p>Some interesting facts here...</p>
         </div>
-      )}
 
       <main className="main-content">
         {/* Loading or Error State */}
@@ -223,11 +226,16 @@ const HomePage = () => {
             )}
           </>
         )}
-
+      </main>
+      <main className='selectedFaculty-content'>
+        <div>
         {/* Faculty Papers Table */}
         {showTable && (
           <div className="papers-table">
-            <h3>Faculty Publications</h3>
+          <h2>{selectedFaculty
+            ? `Faculty papers published by ${selectedFaculty}`
+            : "Faculty Publications"}   
+          </h2>         
             <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
@@ -260,7 +268,21 @@ const HomePage = () => {
             </table>
           </div>
         )}
+        </div>
+        <div>
+          {showHindex && (
+          <div className="hindex_faculty">
+            <Hindex
+              selectedSchool={selectedSchool}
+              selectedDepartment={selectedDepartment}
+              selectedFaculty={selectedFaculty}
+            />
+          </div>
+        )}
+        </div>
+      
       </main>
+
     </div>
   );
 };

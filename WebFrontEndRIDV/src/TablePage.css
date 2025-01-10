@@ -6,32 +6,29 @@
 }
 
 /* Container styling */
-papers-table {
-  padding: 1.5rem;
-  border: 1px solid var(--secondary-color); /* Secondary color for border */
+.papers-table {
   background-color: var(--primary-color);  /* Primary color for background */
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional for slight elevation */
-  width: 100%;
   border-collapse: collapse;
-  margin: 20 auto;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 30px;
 }
 
 /* Table headers */
-.papers-table th {
-  background-color: var(--secondary-color); /* Secondary background for headers */
+.papers-table thead {
+  background-color: #b185db; /* Secondary background for headers */
   color: var(--primary-color);              /* Primary color for text */
   font-weight: bold;                        /* Bold text for headers */
-  padding: 0.8rem;
-  text-align: left;
-  border-bottom: 2px solid var(--primary-color);
+  padding: 1rem !important;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05) ;
 }
 
 /* Table body rows */
 .papers-table td {
   padding: 0.8rem;
   color: var(--text-color); /* Default text color */
-  border-bottom: 1px solid var(--secondary-color);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Alternating row background for better readability */
@@ -43,4 +40,34 @@ papers-table {
 .papers-table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.1); /* Slight highlight on hover */
   cursor: pointer;
+}
+
+.papers-table h2 {
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.papers-table thead th:first-child {
+  border-top-left-radius: 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0) ;
+  border-top: 1px solid rgba(0, 0, 0, 0) ;
+}
+
+.papers-table thead th:last-child {
+  border-top-right-radius: 8px;
+  border-right: 1px solid rgba(0, 0, 0, 0) ;
+  border-top: 1px solid rgba(0, 0, 0, 0) ;
+}
+
+/* Rounded corners for table body (last row) */
+.papers-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0) ;
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+}
+
+.papers-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+  border-right: 1px solid rgba(0, 0, 0, 0) ;
+  border-bottom: 1px solid rgba(0, 0, 0, 0) ;
 }

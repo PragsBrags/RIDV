@@ -87,7 +87,7 @@ const formattedData = data.names.map((item) => {
   return (
     <div className="chart-container">
       <h3 className="chart-title">{chartTitle}</h3>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={600}>
         <BarChart
           data={chartData}
           layout="vertical"
