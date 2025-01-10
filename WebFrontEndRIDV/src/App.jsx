@@ -7,6 +7,7 @@ import Hindex from './hindexdata'; // Import the Hindex component
 import './TablePage.css';
 
 const HomePage = () => {
+  const [fact, setFact] = useState("Loading interesting facts...");
   const [selectedSchool, setSelectedSchool] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedFaculty, setSelectedFaculty] = useState('');
@@ -18,6 +19,26 @@ const HomePage = () => {
   const [showHindex, setHindex] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("http://localhost:3000/") // Replace with your actual backend endpoint
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.fact) {
+          setFact(data.fact); // Assuming your API returns an object with a `fact` key
+        } else {
+          setFact("No facts available at the moment.");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching facts:", err);
+        setErrors("Failed to load facts. Please try again.");
+        setLoading(false);
+      });
+  }, []);
 
   // Fetch school list
   useEffect(() => {
@@ -184,7 +205,13 @@ const HomePage = () => {
 
         <div className="newsletter-card">
           <h2>Did You Know?</h2>
-          <p>Some interesting facts here...</p>
+          {loading ? (
+              <p>Loading interesting facts...</p>
+            ) : errors ? (
+              <p className="error">{errors}</p>
+            ) : (
+              <p>{fact}</p>
+          )}
         </div>
 
       <main className="main-content">
