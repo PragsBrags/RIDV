@@ -167,11 +167,11 @@
 
 /* Main content layout */
 .main-content {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 2rem 0.5rem;
   padding: 0 2rem;
   display: grid;
-  grid-template-columns: 620px 500px 180px; /* Sidebar + Main content */
+  grid-template-columns: 620px 500px auto; /* Sidebar + Main content */
   gap: 2rem;
   flex-grow: 1;
 }
@@ -181,7 +181,7 @@
   margin: 2rem 0.5rem;
   padding: 0 2rem;
   display: grid;
-  grid-template-columns: 1120px 180px; /* Sidebar + Main content */
+  grid-template-columns: 1080px 220px; /* Sidebar + Main content */
   gap: 2rem;
   flex-grow: 1;
 }
@@ -435,7 +435,7 @@
 
 .hindex_faculty p {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   white-space: nowrap; /* Prevent the h-index from wrapping to the next line */
   overflow: hidden;
@@ -443,6 +443,7 @@
   max-width: 100%;
   display: block;
   margin: 0.5rem 0;
+  padding: 0px;
 }
 
 .hindex_faculty h4 {
