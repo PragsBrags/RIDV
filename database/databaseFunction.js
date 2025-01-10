@@ -15,6 +15,7 @@ export async function schoolDetails ( school ){
         const deptNames = await getDepartment(school);
         const schoolCharts = await getSchoolCharts(school);
         const [h_index, citescore] = await getSchoolhincite(school);
+        
         return [deptNames, schoolCharts, h_index, citescore];
     }
     catch (err){
@@ -40,7 +41,15 @@ export async function school () {
     try{
         const schoolnames = await getSchool();
         const schoolcharts = await getSchoolchart();
-        return [ schoolnames, schoolcharts];
+        const highdept = await depthigh();
+        const highscholar = await scholarhigh();
+        const hindexdept = await hindexdepthigh();
+        const citedept = await citedepthigh();
+        const hindexscholar = await hindexscholarhigh();
+        const citescholar = await citescholarhigh();
+
+        return [ schoolnames, schoolcharts,  highdept, highscholar, 
+            hindexdept, citedept, hindexscholar, citescholar];
     }
     catch (err){
         console.error('Return error:',err);
@@ -214,6 +223,122 @@ export async function getPapers(ID) {
         INNER JOIN tbl_scholar a ON pa.author_id = a.scholar_id
         WHERE a.scholar = ?
         `, [ID.scholar]);
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of paper of department with department name
+export async function depthigh() {
+    try {
+        const [result] = await pool.query(`
+        SELECT department,paper_amt
+        FROM tbl_dep_count
+        WHERE paper_amt = (
+        SELECT MAX(paper_amt) 
+        FROM tbl_dep_count
+        )`
+        );
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of paper of scholar with that scholar name
+export async function scholarhigh() {
+    try {
+        const [result] = await pool.query(`
+        select s.scholar,c.paper_amt
+        from tbl_count as c
+        inner join tbl_scholar as s
+        on c.scholar_id=s.scholar_id
+        WHERE paper_amt = (
+        SELECT MAX(paper_amt) 
+        FROM tbl_count 
+        )`
+        );
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of h-index of department with department name
+export async function hindexdepthigh() {
+    try {
+        const [result] = await pool.query(`
+        SELECT department,hindex
+        FROM tbl_dep_count
+        WHERE hindex = (
+        SELECT MAX(hindex) 
+        FROM tbl_dep_count
+        )`
+        );
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of cite_score of department with department name
+export async function citedepthigh() {
+    try {
+        const [result] = await pool.query(`
+        SELECT department,cite_score
+        FROM tbl_dep_count
+        WHERE cite_score = (
+        SELECT MAX(cite_score) 
+        FROM tbl_dep_count
+        )`
+        );
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of h-index of scholar with scholar name
+export async function hindexscholarhigh() {
+    try {
+        const [result] = await pool.query(`
+        SELECT scholar,h_index
+        FROM tbl_scholar
+        WHERE h_index = (
+        SELECT MAX(h_index) 
+        FROM tbl_scholar
+        )`
+        );
+        return result;
+    }
+    catch (err){
+        console.error("Database query error:", err);
+        throw err; // Let the error propagate to the caller
+    }
+};
+
+//Most number of cite-score of scholar with scholar name
+export async function citescholarhigh() {
+    try {
+        const [result] = await pool.query(`
+        SELECT scholar,cite_score
+        FROM tbl_scholar
+        WHERE cite_score = (
+        SELECT MAX(cite_score) 
+        FROM tbl_scholar
+        )`
+        );
         return result;
     }
     catch (err){
