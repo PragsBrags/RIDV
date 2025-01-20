@@ -20,25 +20,89 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [errors, setErrors] = useState("");
+  const [facts, setFacts] = useState([]);
+  const [currentFactIndex, setCurrentFactIndex] = useState(0);  
 
   useEffect(() => {
     setLoading(true);
+
     fetch("http://localhost:3000/") // Replace with your actual backend endpoint
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.fact) {
-          setFact(data.fact); // Assuming your API returns an object with a `fact` key
-        } else {
-          setFact("No facts available at the moment.");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        return response.json();
+      })
+      .then((data) => {
+        if (data) {
+          // Extract and format facts
+          const formattedFacts = [];
+
+          // Check and add facts for each key
+          if (data.highdept && data.highdept.length > 0) {
+            formattedFacts.push(
+              `The ${data.highdept[0].department} has the highest number of published papers: ${data.highdept[0].paper_amt}.`
+            );
+          }
+
+          if (data.highscholar && data.highscholar.length > 0) {
+            formattedFacts.push(
+              `${data.highscholar[0].scholar} has published the most papers: ${data.highscholar[0].paper_amt}.`
+            );
+          }
+
+          if (data.hindexdept && data.hindexdept.length > 0) {
+            formattedFacts.push(
+              `The ${data.hindexdept[0].department} has the highest h-index: ${data.hindexdept[0].hindex}.`
+            );
+          }
+
+          if (data.citedept && data.citedept.length > 0) {
+            formattedFacts.push(
+              `The ${data.citedept[0].department} has the highest citation score: ${data.citedept[0].cite_score}.`
+            );
+          }
+
+          if (data.hindexscholar && data.hindexscholar.length > 0) {
+            formattedFacts.push(
+              `${data.hindexscholar[0].scholar} has the highest h-index: ${data.hindexscholar[0].h_index}.`
+            );
+          }
+
+          if (data.citescholar && data.citescholar.length > 0) {
+            formattedFacts.push(
+              `${data.citescholar[0].scholar} has the highest citation score: ${data.citescholar[0].cite_score}.`
+            );
+          }
+
+          // Set the facts if any were found
+          if (formattedFacts.length > 0) {
+            setFacts(formattedFacts);
+          } else {
+            setFacts(["No facts available at the moment."]);
+          }
+        } else {
+          setFacts(["No facts available at the moment."]);
+        }
+
         setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching facts:", err);
-        setErrors("Failed to load facts. Please try again.");
+        setError("Failed to load facts. Please try again.");
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    // Automatically transition facts every 5 seconds
+    if (facts.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentFactIndex((prevIndex) => (prevIndex + 1) % facts.length);
+      }, 5000);
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [facts]);
 
   // Fetch school list
   useEffect(() => {
@@ -203,14 +267,16 @@ const HomePage = () => {
         </nav>
       </header>
 
-        <div className="newsletter-card">
+        <div className={`newsletter-card ${facts[currentFactIndex] ? 'animate' : ''}`}>
           <h2>Did You Know?</h2>
           {loading ? (
               <p>Loading interesting facts...</p>
             ) : errors ? (
               <p className="error">{errors}</p>
             ) : (
-              <p>{fact}</p>
+              <p key={currentFactIndex}>
+              {facts[currentFactIndex]}
+              </p>
           )}
         </div>
 
